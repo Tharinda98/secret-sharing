@@ -1,6 +1,6 @@
 import hashlib
 
-class Hash:
+class HashClient:
     def __init__(self,hash_string=""):
         self.hash_string=hash_string
 
@@ -13,6 +13,6 @@ class Hash:
 
 
 #test code
-hasher=Hash()
+hasher = HashClient()
 hasher.set_hash("tharinda")
 print(hasher.get_hash())
