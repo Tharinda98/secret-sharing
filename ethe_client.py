@@ -25,7 +25,7 @@ class EthClient:
             send_store_contact)
         print("smart contract transaction done")
 
-    def get_shares():
+    def get_shares(self):
         rtn = self.contact .caller().get()
         share_list = rtn
         collected_shares = []
