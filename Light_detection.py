@@ -82,7 +82,7 @@ while(1):
     if((end_time) and (start_time)):
         if (not detected):
             end_time=time.time()
-        if end_time - start_time > 5:
+        if end_time - start_time > 2:
             count=bit_stream.count(1)
             print(letters[count])   
             bit_stream = []
