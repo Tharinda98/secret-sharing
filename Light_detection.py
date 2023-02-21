@@ -1,21 +1,22 @@
-# Python code for Multiple Color Detection
-  
-  
+#import libraries
 import numpy as np
 import cv2
 import time
 
 
-
 # Capturing video through webcam
 webcam = cv2.VideoCapture(0)
 
+#define variables
 bit_stream=[] 
 charactor_list=[]
 detected=False
 end_time = 0
 start_time = 0
+
+#identity charactor list
 letters=[" ","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"]
+
 # Start a while loop
 while(1):
       
@@ -49,7 +50,9 @@ while(1):
     contours, hierarchy = cv2.findContours(flash_mask,
                                            cv2.RETR_TREE,
                                            cv2.CHAIN_APPROX_SIMPLE)
-     
+
+
+    #creating the bit stream with only 1's 
     if (contours):
         if not detected:
             # Set start time
