@@ -9,35 +9,38 @@ import time
 
 # Capturing video through webcam
 webcam = cv2.VideoCapture(0)
+
 bit_stream=[] 
+charactor_list=[]
 detected=False
 end_time = 0
 start_time = 0
-letters=["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"]
+letters=[" ","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"]
 # Start a while loop
 while(1):
       
-    # Reading the video from the
-    # webcam in image frames
+    
+    # webcam in image frames ignores the boolean value
     _, imageFrame = webcam.read()
   
-    # Convert the imageFrame in 
-    # BGR(RGB color space) to 
-    # HSV(hue-saturation-value)
-    # color space
+    #convert imageframe from BGR(Blue-Green-Red) color space to HSV(Hue-Saturation-Value)
     hsvFrame = cv2.cvtColor(imageFrame, cv2.COLOR_BGR2HSV)
   
+    #lower threshold
     lower_flashlight = np.array([0, 0, 255], np.uint8)
+    #upper threshold
     upper_flashlight = np.array([0, 0, 255], np.uint8)
+
+    #create a binary mask in the rang of lower and upper thresholds
     flash_mask = cv2.inRange(hsvFrame, lower_flashlight, upper_flashlight)
       
-    # Morphological Transform, Dilation
-    # for each color and bitwise_and operator
-    # between imageFrame and mask determines
-    # to detect only that particular color
+    #creates a 5x5 kernel filled with ones 
     kernal = np.ones((5, 5), "uint8")
     
+    #hickening of the white areas in the image.
     flash_mask = cv2.dilate(flash_mask, kernal)
+
+    #preserver only the white parts of the image
     res_flash = cv2.bitwise_and(imageFrame, imageFrame,
                                mask = flash_mask)
    
@@ -60,6 +63,9 @@ while(1):
             end_time = time.time()
             #bit_stream.append(0)
             detected=False
+    
+
+    #draw a bounding box around the detected contours and display text on the image if the area of the contour is greater than 300
     for pic, contour in enumerate(contours):
         area = cv2.contourArea(contour)
         
@@ -74,22 +80,38 @@ while(1):
                         cv2.FONT_HERSHEY_SIMPLEX,
                         1.0, (255, 255, 0))
         
-    # Program Termination
+    # display an image in a window with a given window name
     cv2.imshow("Flash Light Detection in Real-TIme", imageFrame)
-    print(bit_stream)
+
+
+    #print(bit_stream)
 
     # Check if 5 seconds have elapsed and reset the bit stream
     if((end_time) and (start_time)):
+        # print(start_time)
+        # print(end_time)
         if (not detected):
             end_time=time.time()
         if end_time - start_time > 2:
-            count=bit_stream.count(1)
-            print(letters[count])   
+            count=len(bit_stream)
             bit_stream = []
-            start_time = time.time()
-
-
-
+            if count>0:
+                print(count)
+                charactor=letters[count-1]
+                print("detected charactor:",charactor) 
+                charactor_list.append(charactor)
+                start_time = time.time()
+                end_time = time.time()
+                #print(charactor_list)
+                
+            
+            elif end_time - start_time > 10:
+                cv2.destroyAllWindows()
+                message = ''.join(charactor_list)
+                print("message recieved:",message)
+                break
+            
+    #close the video stream and destroy all windows when the user presses the 'q' key
     if cv2.waitKey(10) & 0xFF == ord('q'):
         cap.release()
         cv2.destroyAllWindows()
